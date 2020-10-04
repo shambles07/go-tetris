@@ -2,15 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/nsf/termbox-go"
 	"github.com/shambles07/go-tetris/tetris"
-	"math/rand"
-	"time"
+
+	"github.com/nsf/termbox-go"
 )
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
-
 	err := termbox.Init()
 	if err != nil {
 		panic(err)

@@ -97,10 +97,10 @@ func (board *Board) clearRows() {
 	y := height - 1
 	for y >= 0 {
 		for board.rowComplete(y) {
-			rowsCleared += 1
+			rowsCleared++
 			board.collapseRow(y)
 		}
-		y -= 1
+		y--
 	}
 }
 
