@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/nsf/termbox-go"
-	"github.com/shambles07/go-tetris"
+	"github.com/shambles07/go-tetris/tetris"
 	"math/rand"
 	"time"
 )
