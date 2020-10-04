@@ -30,7 +30,7 @@ var (
 	headerHeight       = 5
 	previewHeight      = 6
 	sidebarWidth       = 20
-	instructionsHeight = 11
+	instructionsHeight = 12
 
 	// The internal cells (the board cells) are treated as pairs, so to keep them on even x coordinates we'll
 	// put an empty column on the left side.
@@ -160,7 +160,9 @@ func drawStaticBoardParts() {
 		"Move left       left arrow or 'h'",
 		"Move right      right arrow or 'l'",
 		"Move down       down arrow or 'j'",
-		"Rotate piece    up arrow or 'k'",
+		"Rotate CW       up arrow/x or 'k'",
+		"Rotate CCW      z",
+		"Rotate 180      a",
 		"Quick drop      space",
 		"Pause/Resume    'p'",
 		"Quit            ctrl-c or 'q'",

@@ -3,10 +3,10 @@
 package tetris
 
 import (
-	"github.com/nsf/termbox-go"
 	"math"
-	"math/rand"
 	"time"
+
+	"github.com/nsf/termbox-go"
 )
 
 type Direction int
@@ -18,12 +18,16 @@ const (
 	Right
 )
 
-// A Game tracks the entire game state of tetris, including the Board, the upcoming piece, the game speed
+// a defined bag
+// var mainBag Bag
+
+// Game tracks the entire game state of tetris, including the Board, the upcoming piece, the game speed
 // (dropDelayMillis), the score, and various other internal data.
 type Game struct {
 	board           *Board
 	nextPiece       *Piece
 	pieces          []Piece
+	bag             *Bag
 	paused          bool
 	over            bool
 	dropDelayMillis int
@@ -31,11 +35,14 @@ type Game struct {
 	score           int
 }
 
-// Initialize a new game, ready to be started with Start().
+// NewGame initializes a new game, ready to be started with Start()
 func NewGame() *Game {
 	game := new(Game)
 	game.pieces = tetrisPieces()
 	game.board = newBoard()
+	game.bag = new(Bag)
+	game.bag.initialize()
+	// mainBag.initialize() // initialize first 7 bag, MUST be before first call to GeneratePiece()
 	game.board.currentPiece = game.GeneratePiece()
 	game.board.currentPosition = game.board.currentPiece.initialLocation
 	game.nextPiece = game.GeneratePiece()
@@ -69,6 +76,8 @@ const (
 	MoveRight
 	MoveDown
 	Rotate
+	Revrotate
+	Dblrotate
 	QuickDrop
 	Pause
 	Quit
@@ -120,6 +129,10 @@ gameOver:
 				game.QuickDrop()
 			case Rotate:
 				game.Rotate()
+			case Revrotate:
+				game.Revrotate()
+			case Dblrotate:
+				game.Dblrotate()
 			case Pause:
 				game.PauseToggle()
 			case Quit:
@@ -183,6 +196,12 @@ func waitForUserEvent() GameEvent {
 				return MoveRight
 			case 'j':
 				return MoveDown
+			case 'z':
+				return Revrotate
+			case 'x':
+				return Rotate
+			case 'a':
+				return Dblrotate
 			}
 		}
 	case termbox.EventResize:
@@ -195,7 +214,7 @@ func waitForUserEvent() GameEvent {
 
 // Randomly choose a new game piece from among the the available pieces.
 func (game *Game) GeneratePiece() *Piece {
-	return &game.pieces[rand.Intn(len(game.pieces))]
+	return &game.pieces[game.bag.getPiece()]
 }
 
 // Anchor the current piece to the board, clears lines, increments the score, and generate a new piece. Sets
@@ -285,9 +304,29 @@ func (game *Game) Rotate() {
 	}
 }
 
+// 180 degree rotation.
+func (game *Game) Dblrotate() {
+	game.board.currentPiece.rotate()
+	if game.board.currentPieceInCollision() {
+		game.board.currentPiece.unrotate()
+	}
+	game.board.currentPiece.rotate()
+	if game.board.currentPieceInCollision() {
+		game.board.currentPiece.unrotate()
+	}
+}
+
+// Rotates the current game piece, if possible.
+func (game *Game) Revrotate() {
+	game.board.currentPiece.unrotate()
+	if game.board.currentPieceInCollision() {
+		game.board.currentPiece.rotate()
+	}
+}
+
 // Draw the dynamic parts of the game interface (the board, the next piece preview pane, and the score).  The
-// static parts should be drawn with the drawStaticBoardParts() function, if needed.  If clearOnly is true, 
-// the board and preview pane will be cleared rather than redrawn. 
+// static parts should be drawn with the drawStaticBoardParts() function, if needed.  If clearOnly is true,
+// the board and preview pane will be cleared rather than redrawn.
 func (game *Game) DrawDynamic(clearOnly bool) {
 
 	// Print the board contents. Each block will correspond to a side-by-side pair of cells in the termbox, so
@@ -335,7 +374,7 @@ func (game *Game) DrawDynamic(clearOnly bool) {
 	termbox.Flush()
 }
 
-// Pause or unpause the game, depending on game.paused.
+// PauseToggle - pause or unpause the game, depending on game.paused.
 func (game *Game) PauseToggle() {
 	if game.paused {
 		drawStaticBoardParts()
@@ -348,7 +387,7 @@ func (game *Game) PauseToggle() {
 	game.paused = !game.paused
 }
 
-// Draw the pause screen, hiding the game board and next piece.
+// DrawPauseScreen draws the pause screen, which hides the game board and next piece.
 func (game *Game) DrawPauseScreen() {
 	// Clear the board and preview screen
 	game.DrawDynamic(true)
@@ -367,7 +406,7 @@ func (game *Game) DrawPauseScreen() {
 	termbox.Flush()
 }
 
-// Draw the "GAME OVER" overlay on top of the game interface.
+// DrawGameOver is the "GAME OVER" overlay on top of the game interface.
 func (game *Game) DrawGameOver() {
 	for y := (totalHeight/2 - 1); y <= (totalHeight/2)+1; y++ {
 		for x := 1; x < totalWidth+3; x++ {

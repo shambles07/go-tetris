@@ -1,41 +1,32 @@
-A simple terminal tetris implementation in Go.
+A fork of a simple terminal tetris implementation in Go, originally by [cespare](https://github.com/cespare).
+
+Features listed in bold are additions.
 
 ## Installation:
-
-    $ go get github.com/cespare/go-tetris
+    $ go get github.com/shambles07/go-tetris
 
 ## Usage:
-
     $ go-tetris
 
 ## Controls
-
 * Move piece down: `↓`, `j`
 * Move piece left: `←`, `h`
 * Move piece right: `→`, `l`
-* Rotate piece: `↑`, `k`
+* Rotate CW: `↑`, `k`, **`x`**
+* **Rotate CCW: `z`**
+* **Rotate 180: `a`**
 * Quick drop: `space`
 * Quit: `q`, `ctrl-c`
 
 ## Implemented features
-
-* Random piece generation
-* Automatic advancement
-* Collision detection
-* Anchoring/switching to the next piece
+* Simplified 7-bag piece order
 * Quick drop
-* Line clearing
-* Rotation
-* Piece colors
-* Print next piece
-* Scoring
-* Game Over
-* Line clearing animations
+* Rotation (CW/**CCW**)
+* Next box
 * Speeding up
 * Pausing
 
-## To implement
-
+## Feature Roadmap
 * High scores
-* Music + sound effects
-* 'Ghost' piece showing where your piece will land
+* Hold piece
+* Ghost piece
